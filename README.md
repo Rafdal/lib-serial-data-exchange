@@ -9,15 +9,32 @@ The main idea is to define a data frame with named fields and their types. The n
 The library is composed of two parts: the host side and the device side. Both parts follows the same flow diagram:
 
 ```mermaid
-flowchart TB
-    A[Define data frame] --> B[Send data frame]
-    B --> C[Receive data frame]
-    C --> D[Define data frame]
-    D --> E[Send data frame]
-    E --> F[Receive data frame]
-    F --> G[Send data]
-    G --> H[Receive data]
-    H --> G
+sequenceDiagram
+    participant H as Host (Python)
+    participant D as Device (C/C++)
+    H->>D: Connect
+    D->>H: Define data frame
+    H->>D: Define data frame
+    H->>D: Send data
+    D->>H: Receive data
+    H->>D: Disconnect
+    D->>H: Disconnect
+```
+
+## Flowchart
+
+```mermaid
+flowchart TD
+    A0[Device] --> A1(Send Routine) 
+    A1 --> B{{¿Data frame sent?}}
+    B --> |Yes| C(Load data)
+    C --> D(Send data)
+    B --> |No| G(Send data frame)
+
+    H0[Host] --> H1(Receive Routine)
+    H1 --> I{{¿Is data frame format set?}}
+    I --> |Yes| J(Parse data)
+    I --> |No| L(Request data frame)
 ```
 
 ### Host side (Python)
